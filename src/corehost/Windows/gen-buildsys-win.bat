@@ -10,6 +10,7 @@ if %1=="/?" GOTO :USAGE
 
 setlocal
 set __sourceDir=%~dp0..
+echo "Source Dir: %__sourceDir%"
 set __VSString=%2
  :: Remove quotes
 set __VSString=%__VSString:"=%

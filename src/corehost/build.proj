@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="Directory.Build.props" />
-  <Import Project="Directory.Build.targets" />
-
+<Project>
+  <PropertyGroup>
+    <Language>C#</Language>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <SkipCopyBuildProduct>true</SkipCopyBuildProduct>
+  </PropertyGroup>
   <!-- Target that builds dotnet, hostfxr and hostpolicy with the same version as what NetCoreApp will be built for
        since the build produced artifacts should always version the same (even if they may not get used).
   -->
-  <Target Name="Build" DependsOnTargets="BuildCoreHostUnix;BuildCoreHostWindows" /> 
 
   <PropertyGroup Condition="'$(OSGroup)' != 'Windows_NT'">
     <GenerateVersionSourceFile>true</GenerateVersionSourceFile>
@@ -46,10 +47,11 @@
           DestinationFolder="$(CoreHostOutputDir)"/>
   </Target>
 
+
   <Target Name="BuildCoreHostWindows"
           Condition="'$(OSGroup)' == 'Windows_NT'"
           DependsOnTargets="GetLatestCommitHash">
-
+<Message Importance="High" Text="chcosta" />
     <!-- Generate Version files -->
     <ItemGroup>
       <HostFiles Include="dotnet">
@@ -62,7 +64,11 @@
         <FileDescription>.NET Core Host Policy - $(HostPolicyVersion)</FileDescription>
       </HostFiles>
     </ItemGroup>
+
+    <ItemGroup>
+    </ItemGroup>
     
+    <Message Importance="High" Text="MSBuildProjectFullPath: $(MSBuildProjectFullPath)" />
     <MSBuild Projects="$(MSBuildProjectFullPath)"
              Properties="GenerateNativeVersionInfo=true;FileDescription=%(HostFiles.FileDescription);NativeVersionFileDir=$(IntermediateOutputRootPath)hostResourceFiles\%(HostFiles.Identity);NativeVersionHeaderFile=$(IntermediateOutputRootPath)hostResourceFiles\%(HostFiles.Identity)\version_info.h"
              Targets="GenerateNativeVersionFile" 
@@ -92,4 +98,5 @@
     <Copy SourceFiles="@(CMakeOutput)"
           DestinationFolder="$(CoreHostOutputDir)"/>
   </Target>
+
 </Project>

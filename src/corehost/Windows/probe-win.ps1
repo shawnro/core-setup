@@ -35,6 +35,7 @@ function LocateCMake
   }
   # Check the default installation directory
   $inDefaultDir = [System.IO.Path]::Combine(${Env:ProgramFiles(x86)}, "CMake\bin\cmake.exe")
+  $inDefaultDir = "C:\Users\chcosta\.netcoreeng\native\bin\cmake.cmd"
   if ([System.IO.File]::Exists($inDefaultDir)) {
     return $inDefaultDir
   }
