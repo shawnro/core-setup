@@ -7,4 +7,6 @@
   <ItemGroup>
     <PackageReference Include="$(FeedTasksPackage)" Version="$(FeedTasksPackageVersion)" />
   </ItemGroup>
+
+  <UsingTask TaskName="Microsoft.Build.Tasks.Feed.BlobFeed" AssemblyFile="$(FeedTasksPackage)" />
 </Project>

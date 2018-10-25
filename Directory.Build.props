@@ -3,11 +3,10 @@
 
   <PropertyGroup>
     <ImportNetSdkFromRepoToolset>false</ImportNetSdkFromRepoToolset>
-    <!-- <Language>C#</Language> -->
-
   </PropertyGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.DotNet.Arcade.Sdk" />
+
 <!--  
   <PropertyGroup>
     <MajorVersion>3</MajorVersion>
