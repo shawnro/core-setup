@@ -1,7 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <TargetFramework></TargetFramework>
+
+<!-- SHAWNR
+    <MajorVersion>3</MajorVersion>
+    <MinorVersion>0</MinorVersion>
+    <PatchVersion>0</PatchVersion>
+-->
     <VersionPrefix>1.0.0</VersionPrefix>
-    <PreReleaseVersionLabel>prerelease</PreReleaseVersionLabel>
+
+    <PreReleaseVersionLabel Condition="'$(PackageVersionStamp)' != ''">$(PackageVersionStamp)</PreReleaseVersionLabel>
+    <PreReleaseVersionLabel Condition="'$(PreReleaseVersionLabel)' == ''">preview1</PreReleaseVersionLabel>
+
+<!-- Copy/paste from old dir.props -->
+<!-- SHAWNR
+    <StabilizePackageVersion Condition="'$(StabilizePackageVersion)' == ''">false</StabilizePackageVersion>
+
+    <IncludePreReleaseLabelInPackageVersion Condition="'$(StabilizePackageVersion)' != 'true' or '$(PackageVersionStamp)' != ''">true</IncludePreReleaseLabelInPackageVersion>
+    <IncludeBuildNumberInPackageVersion Condition="'$(StabilizePackageVersion)' != 'true'">true</IncludeBuildNumberInPackageVersion>
+
+    <ReleaseSuffix>$(PreReleaseLabel)</ReleaseSuffix>
+    <ReleaseBrandSuffix>Preview 1</ReleaseBrandSuffix>
+    <Channel>master</Channel>
+    <ContainerName>dotnet</ContainerName>
+    <ChecksumContainerName>$(ContainerName)</ChecksumContainerName>
+    <NETCoreAppMaximumVersion>$(MajorVersion).$(MinorVersion)</NETCoreAppMaximumVersion>
+-->
+<!-- End copy/paste -->
+
+    <!--
+      This name is used to create a GIT repository URL https://github.com/dotnet/$(GitHubRepositoryName) used to find source code for debugging
+      It is also used to name the build output manifest for orchestrated builds.
+    -->
+<!-- SHAWNR
+    <GitHubRepositoryName Condition="'$(GitHubRepositoryName)' == ''">core-setup</GitHubRepositoryName>
+-->
+    <!-- Opt-out repo features -->
+<!-- SHAWNR
+    <UsingToolNetFrameworkReferenceAssemblies>true</UsingToolNetFrameworkReferenceAssemblies>
+    <MicrosoftNetFrameworkReferenceAssembliesVersion>1.0.0-alpha-004</MicrosoftNetFrameworkReferenceAssembliesVersion>
+-->
+    <!-- Libs -->
+    <!-- <NewtonsoftJsonVersion>9.0.1</NewtonsoftJsonVersion> -->
+
   </PropertyGroup>
 </Project>

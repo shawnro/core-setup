@@ -9,7 +9,7 @@
 
   <Choose>
     <!--
-    Newtonsoft.Json v11.0.1 is the first verison that targets netstandard2.0. Since we added a target for netstandard2.0
+    Newtonsoft.Json v11.0.1 is the first version that targets netstandard2.0. Since we added a target for netstandard2.0
     so users aren't forced to download the 1.x dependencies, it makes sense to use this version of Newtonsoft.Json.
     However, we still use the previous (v9.0.1) for other TFMs, so existing users don't need to upgrade their Newtonsoft.Json.
     For example, the SDK targets net4x and is loaded in VS, so it can't upgrade to a new Newtonsoft.Json.
@@ -32,9 +32,6 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' Or '$(TargetFramework)' == 'netstandard1.6' ">
-    <PackageReference Include="System.Diagnostics.Debug" Version="4.0.11" />
-    <PackageReference Include="System.Dynamic.Runtime" Version="4.0.11" />
-    <PackageReference Include="System.Linq" Version="4.1.0" />
     <PackageReference Include="System.Diagnostics.Debug" Version="4.0.11" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.0.11" />
     <PackageReference Include="System.Linq" Version="4.1.0" />

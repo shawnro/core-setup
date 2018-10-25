@@ -1,30 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project>
 
   <PropertyGroup>
-    <!--
-    NOTE: This .props file assumes it is only imported by projects that use the SDK="Microsoft.NET.Sdk" in their project.
-    We are currently on too old of an SDK to detect - it doesn't have https://github.com/dotnet/sdk/pull/1242.
-    But once we move to a new version, we can remove this property setting, and everything else will work correctly.
-    -->
-    <UsingMicrosoftNETSdk Condition="'$(MSBuildProjectExtension)' == '.csproj'">true</UsingMicrosoftNETSdk>
+    <ImportNetSdkFromRepoToolset>false</ImportNetSdkFromRepoToolset>
+    <!-- <Language>C#</Language> -->
+
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(UsingMicrosoftNETSdk)' == 'true'">
-    <!-- SDK-based projects' Platform should default to AnyCPU, not $(TargetArchitecture) like dir.props sets. -->
-    <Platform>AnyCPU</Platform>
-    <UsingNETSdkCompiler>true</UsingNETSdkCompiler>
-    <DisableBuildToolsRoslynVersion>true</DisableBuildToolsRoslynVersion>
+  <Import Project="Sdk.props" Sdk="Microsoft.DotNet.Arcade.Sdk" />
+<!--  
+  <PropertyGroup>
+    <MajorVersion>3</MajorVersion>
+    <MinorVersion>0</MinorVersion>
+    <PatchVersion>0</PatchVersion>
+  </PropertyGroup>
+-->
+
+  <!--
+    $(OS) is set to Unix/Windows_NT. This comes from an environment variable on Windows and MSBuild on Unix.
+  -->
+  <PropertyGroup>
+    <!-- Temp change to make OS X build behave as a Linux build -->
+    <OsEnvironment Condition="'$(OsEnvironment)'=='' AND '$(OS)'=='OSX'">Unix</OsEnvironment>
+    <OsEnvironment Condition="'$(OsEnvironment)'==''">$(OS)</OsEnvironment>
   </PropertyGroup>
 
-  <Import Project="dir.props" />
-
-  <PropertyGroup Condition="'$(UsingMicrosoftNETSdk)' == 'true'">
-    <!--
-    The Microsoft.NET.Sdk changed the definition of what it assumes $(BaseIntermediateOutputPath) is.
-    In the "old" .csproj files, BaseIntermediateOutputPath could be shared with many projects.
-    In the SDK-based .csproj files, BaseIntermediateOutputPath is assumed to be project-specific.
-    -->
-    <BaseIntermediateOutputPath>$(IntermediateOutputPath)</BaseIntermediateOutputPath>
+  <PropertyGroup>
+    <OSGroup Condition="'$(OSGroup)' == ''">$(OsEnvironment)</OSGroup>
   </PropertyGroup>
 
 </Project>

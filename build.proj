@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="dir.props" />
+  <Import Project="Directory.Build.props"/>
 
   <!-- required to build the projects in their specified order -->
   <PropertyGroup>
@@ -9,9 +9,45 @@
 
   <PropertyGroup>
     <!-- To disable the restoration of packages, set RestoreDuringBuild=false or pass /p:RestoreDuringBuild=false.-->
-    <RestoreDuringBuild Condition="'$(RestoreDuringBuild)'==''">true</RestoreDuringBuild>
+    <!-- SHAWNR <RestoreDuringBuild Condition="'$(RestoreDuringBuild)'==''">true</RestoreDuringBuild> -->
+
+    <BuildRestore Condition="'$(BuildRestore)'==''">true</BuildRestore>
+    <BuildNative Condition="'$(BuildNative)'==''">true</BuildNative>
+    <BuildTests Condition="'$(BuildTests)'==''">false</BuildTests>
+    <BuildPackages Condition="'$(BuildPackages)'==''">true</BuildPackages>
+
+    <BuildDependsOn Condition="'$(BuildRestore)'=='true'">$(BuildDependsOn);Restore</BuildDependsOn>
+    <BuildDependsOn>$(BuildDependsOn);BuildHost</BuildDependsOn>
+    <BuildDependsOn Condition="'$(BuildManaged)'=='true'">$(BuildDependsOn);BuildManaged</BuildDependsOn>
+    <BuildDependsOn Condition="'$(BuildTests)'=='true'">$(BuildDependsOn);Test</BuildDependsOn>
+<!-- SHAWNR
+    <BuildDependsOn Condition="'$(BuildPackages)'=='true'">$(BuildDependsOn);Pack</BuildDependsOn>    
+    -->
   </PropertyGroup>
 
+  <Target Name="Restore">
+    <ItemGroup>
+      <!-- SHAWNR <_RestoreProjects Include="external\dir.proj" /> -->
+    </ItemGroup>
+
+    <!-- Generate the configurations for this repo -->
+<!-- SHAWNR
+    <GenerateConfigurationProps Properties="@(Property)" PropertyValues="@(PropertyValue)" PropsFolder="$(BuildConfigurationFolder)" />
+-->
+    <MSBuild Projects="@(_RestoreProjects)" Properties="$(ProjectProperties)" />
+  </Target>
+
+  <Target Name="BuildHost">
+    <ItemGroup>
+      <_BuildHostProjects Include="src/dir.proj" />
+    </ItemGroup>
+
+    <MSBuild Projects="@(_BuildHostProjects)" Properties="$(ProjectProperties)" />
+  </Target>
+
+  <Target Name="Build" DependsOnTargets="$(BuildDependsOn)" />
+
+<!-- SHAWNR
   <PropertyGroup>
     <TraversalBuildDependencies>
       CreateOrUpdateCurrentVersionFile;
@@ -25,13 +61,18 @@
       $(TraversalBuildDependsOn);
     </TraversalBuildDependsOn>
   </PropertyGroup>
-
+-->
   <ItemGroup>
-    <Project Include="src/dir.proj" />
+<!--    <Project Include="src/dir.proj" /> -->
+<!-- Remove the below line and put it where it goes -->    
+    <Project Include="src/managed/Microsoft.DotNet.PlatformAbstractions/Microsoft.DotNet.PlatformAbstractions.csproj"/>
+<!-- SHAWNR
     <Project Include="src/pkg/packaging/dir.proj"/>
     <Project Include="$(MSBuildThisFileDirectory)src/test/dir.proj" Condition="'$(SkipTests)' != 'true'"/>
+    -->
   </ItemGroup>
 
+<!-- SHAWNR
   <Target Name="BuildTraversalBuildDependencies"
           DependsOnTargets="$(TraversalBuildDependencies)" />
 
@@ -64,14 +105,18 @@
   <Import Project="dir.traversal.targets" />
   <Import Project="$(ToolsDir)clean.targets" />
   <Import Project="$(ToolsDir)VersionTools.targets" Condition="Exists('$(ToolsDir)VersionTools.targets')" />
-
+-->
 
   <!-- Override RestorePackages from dir.traversal.targets and do a batch restore -->
+<!-- SHAWNR
   <Target Name="RestorePackages" DependsOnTargets="BatchRestorePackages" />
+  -->
 
   <!-- Override clean from dir.traversal.targets and just remove the full BinDir -->
+<!-- SHAWNR
   <Target Name="CleanAllProjects">
     <RemoveDir Directories="$(BinDir)" />
   </Target>
+  -->
 
 </Project>
