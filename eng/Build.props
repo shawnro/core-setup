@@ -2,6 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <!-- Since we're not using a .sln file, we have to define the project files we need to build -->
-    <ProjectToBuild Condition="'$(DirectoryToBuild)' == ''" Include="$(RepoRoot)\build.proj" />
+    <!-- <ProjectToBuild Condition="'$(DirectoryToBuild)' == ''" Include="$(RepoRoot)\build.proj" /> -->
   </ItemGroup>
 </Project>
