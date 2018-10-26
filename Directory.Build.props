@@ -13,6 +13,47 @@
     <PatchVersion>0</PatchVersion>
   </PropertyGroup>
 
+<!--  TODO: Figure out how to use Arcade Versioning story -->
+  
+  <PropertyGroup>
+    <!--
+      By default, we are always building the nuget packages for HostPolicy, HostFXR and
+      Dotnet/AppHost. Thus, the "UseShipped*" properties (below) are always set to false.
+      However, there are scenarios when some of these components will not change (e.g. during
+      servicing, we may only change HostPolicy but not HostFXR and Dotnet/AppHost). In such cases,
+      set the appropriate "UseShipped*" property below to true so that we will use the last shipped
+      version of the package.
+    -->
+    
+    <!-- The host/apphost package versions are only updated whenever there is a change in the components -->
+    <UseShippedHostPackage>false</UseShippedHostPackage>
+    <HostVersion Condition="'$(UseShippedHostPackage)' != 'true'">$(MajorVersion).$(MinorVersion).$(PatchVersion)</HostVersion>
+    <HostVersion Condition="'$(UseShippedHostPackage)' == 'true'">2.0.0</HostVersion>
+
+    <UseShippedAppHostPackage>false</UseShippedAppHostPackage>
+    <AppHostVersion Condition="'$(UseShippedAppHostPackage)' != 'true'">$(MajorVersion).$(MinorVersion).$(PatchVersion)</AppHostVersion>
+    <AppHostVersion Condition="'$(UseShippedAppHostPackage)' == 'true'">2.0.0</AppHostVersion>
+    
+    <!--
+        The FXR Resolver package version is only updated whenever there is a change in it.
+        If there is ever a need to use a shipped version of the package, then set the property
+        below to true.
+    -->
+    <UseShippedHostResolverPackage>false</UseShippedHostResolverPackage>
+    <HostResolverVersion Condition="'$(UseShippedHostResolverPackage)' != 'true'">$(MajorVersion).$(MinorVersion).$(PatchVersion)</HostResolverVersion>
+    <HostResolverVersion Condition="'$(UseShippedHostResolverPackage)' == 'true'">2.0.0</HostResolverVersion>
+
+    
+    <!--
+         Host Policy package version is only updated whenever there is a change in it.
+         If there is ever a need to use a shipped version of the package, then set the property
+         below to true.
+    -->
+    <UseShippedHostPolicyPackage>false</UseShippedHostPolicyPackage>
+    <HostPolicyVersion Condition="'$(UseShippedHostPolicyPackage)' != 'true'">$(MajorVersion).$(MinorVersion).$(PatchVersion)</HostPolicyVersion>
+    <HostPolicyVersion Condition="'$(UseShippedHostPolicyPackage)' == 'true'">2.0.0</HostPolicyVersion>
+  </PropertyGroup>
+
   <!--
     $(OS) is set to Unix/Windows_NT. This comes from an environment variable on Windows and MSBuild on Unix.
   -->

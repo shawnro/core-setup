@@ -75,6 +75,8 @@
              Targets="GenerateNativeVersionFile" 
              Condition="'$(IncrementalNativeBuild)' != 'true'"/>
     <PropertyGroup>
+<!-- TODO: this is hard coded and needs to be removed -->
+      <OutputRid>1</OutputRid>
       <BuildArgs>$(ConfigurationGroup) $(TargetArchitecture) apphostver $(AppHostVersion) hostver $(HostVersion) fxrver $(HostResolverVersion) policyver $(HostPolicyVersion) commit $(LatestCommit) rid $(OutputRid)</BuildArgs>
       <BuildArgs Condition="'$(PortableBuild)' == 'true'">$(BuildArgs) portable</BuildArgs>  
       <BuildArgs Condition="'$(IncrementalNativeBuild)' == 'true'">$(BuildArgs) incremental-native-build</BuildArgs>
