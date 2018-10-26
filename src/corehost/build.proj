@@ -52,7 +52,6 @@
   <Target Name="BuildCoreHostWindows"
           Condition="'$(OSGroup)' == 'Windows_NT'"
           DependsOnTargets="GetLatestCommitHash">
-<Message Importance="High" Text="chcosta" />
     <!-- Generate Version files -->
     <ItemGroup>
       <HostFiles Include="dotnet">

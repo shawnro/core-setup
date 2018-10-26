@@ -155,8 +155,10 @@ cd %__rootDir%
 SET __NativeBuildArgs=/t:rebuild
 if /i "%__IncrementalNativeBuild%" == "1" SET __NativeBuildArgs=
 
-echo %__rootDir%\run.cmd build-native -- "%__IntermediatesDir%\ALL_BUILD.vcxproj" %__NativeBuildArgs% /p:Configuration=%CMAKE_BUILD_TYPE% %__msbuildArgs%
-call %__rootDir%\run.cmd build-native -- "%__IntermediatesDir%\ALL_BUILD.vcxproj" %__NativeBuildArgs% /p:Configuration=%CMAKE_BUILD_TYPE% %__msbuildArgs%
+REM echo %__rootDir%\run.cmd build-native -- "%__IntermediatesDir%\ALL_BUILD.vcxproj" %__NativeBuildArgs% /p:Configuration=%CMAKE_BUILD_TYPE% %__msbuildArgs%
+REM call %__rootDir%\run.cmd build-native -- "%__IntermediatesDir%\ALL_BUILD.vcxproj" %__NativeBuildArgs% /p:Configuration=%CMAKE_BUILD_TYPE% %__msbuildArgs%
+echo %__rootDir%\.dotnet\dotnet.exe msbuild "%__IntermediatesDir%\ALL_BUILD.vcxproj" %__NativeBuildArgs% /p:Configuration=%CMAKE_BUILD_TYPE% %__msbuildArgs%
+call %__rootDir%\.dotnet\dotnet.exe msbuild "%__IntermediatesDir%\ALL_BUILD.vcxproj" %__NativeBuildArgs% /p:Configuration=%CMAKE_BUILD_TYPE% %__msbuildArgs%
 IF ERRORLEVEL 1 (
     goto :Failure
 )

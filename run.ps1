@@ -9,11 +9,12 @@ $env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE = 1
 $env:DOTNET_MULTILEVEL_LOOKUP=0
 
 $initTools = Join-Path $PSScriptRoot "init-tools.cmd"
-& $initTools
+#& $initTools
 
 # execute the tool using the dotnet.exe host
-$dotNetExe = Join-Path $toolsLocalPath "dotnetcli\dotnet.exe"
+$dotNetExe = Join-Path $PSScriptRoot ".dotnet\dotnet.exe"
 $runExe = Join-Path $toolsLocalPath "run.exe"
 $runConfig = Join-Path $PSScriptRoot "config.json"
-& $dotNetExe $runExe $runConfig $args
+# & $dotNetExe $runExe $runConfig $args
+& $dotNetExe $args
 exit $LastExitCode
