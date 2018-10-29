@@ -64,8 +64,9 @@
 -->
   <ItemGroup>
 <!--    <Project Include="src/dir.proj" /> -->
-<!-- Remove the below line and put it where it goes -->    
-    <Project Include="src/managed/Microsoft.DotNet.PlatformAbstractions/Microsoft.DotNet.PlatformAbstractions.csproj"/>
+<!-- Remove the below line and put it where it goes --> 
+    <Project Include="src/corehost/corehost.csproj"/>   
+<!--    <Project Include="src/managed/Microsoft.DotNet.PlatformAbstractions/Microsoft.DotNet.PlatformAbstractions.csproj"/> -->
 <!-- SHAWNR
     <Project Include="src/pkg/packaging/dir.proj"/>
     <Project Include="$(MSBuildThisFileDirectory)src/test/dir.proj" Condition="'$(SkipTests)' != 'true'"/>

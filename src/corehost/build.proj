@@ -52,6 +52,10 @@
   <Target Name="BuildCoreHostWindows"
           Condition="'$(OSGroup)' == 'Windows_NT'"
           DependsOnTargets="GetLatestCommitHash">
+    
+    <Message Text="BaseIntermediateOutputPath == $(BaseIntermediateOutputPath)" Importance="High"/>
+    <Message Text="IntermediateOutputRootPath == $(IntermediateOutputRootPath)" Importance="High"/>
+    
     <!-- Generate Version files -->
     <ItemGroup>
       <HostFiles Include="dotnet">
@@ -70,7 +74,7 @@
     
     <Message Importance="High" Text="MSBuildProjectFullPath: $(MSBuildProjectFullPath)" />
     <MSBuild Projects="$(MSBuildProjectFullPath)"
-             Properties="GenerateNativeVersionInfo=true;FileDescription=%(HostFiles.FileDescription);NativeVersionFileDir=$(IntermediateOutputRootPath)hostResourceFiles\%(HostFiles.Identity);NativeVersionHeaderFile=$(IntermediateOutputRootPath)hostResourceFiles\%(HostFiles.Identity)\version_info.h"
+             Properties="FileDescription=%(HostFiles.FileDescription);NativeVersionFileDir=$(IntermediateOutputRootPath)hostResourceFiles\%(HostFiles.Identity);NativeVersionFile=$(IntermediateOutputRootPath)hostResourceFiles\%(HostFiles.Identity)\version_info.h"
              Targets="GenerateNativeVersionFile" 
              Condition="'$(IncrementalNativeBuild)' != 'true'"/>
     <PropertyGroup>
