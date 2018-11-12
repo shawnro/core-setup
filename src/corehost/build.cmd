@@ -4,8 +4,8 @@ setlocal
 :SetupArgs
 :: Initialize the args that will be passed to cmake
 set __nativeWindowsDir=%~dp0Windows
-set __binDir=%~dp0..\..\bin
 set __rootDir=%~dp0..\..
+set __binDir=%__rootDir%\bin
 set __CMakeBinDir=""
 set __IntermediatesDir=""
 set __BuildArch=x64
@@ -37,6 +37,10 @@ if /i [%1] == [apphostver]  (set __AppHostVersion=%2&&shift&&shift&goto Arg_Loop
 if /i [%1] == [fxrver]      (set __HostResolverVersion=%2&&shift&&shift&goto Arg_Loop)
 if /i [%1] == [policyver]   (set __HostPolicyVersion=%2&&shift&&shift&goto Arg_Loop)
 if /i [%1] == [commit]      (set __CommitSha=%2&&shift&&shift&goto Arg_Loop)
+
+if /i [%1] == [rootdir]     ( set __rootDir=%2&&shift&&shift&goto Arg_Loop)
+if /i [%1] == [binDir]      ( set __CMakeBinDir=%2&&shift&&shift&goto Arg_Loop)
+if /i [%1] == [interDir]    ( set __IntermediatesDir=%2&&shift&&shift&goto Arg_Loop)
 
 if /i [%1] == [incremental-native-build] ( set __IncrementalNativeBuild=1&&shift&goto Arg_Loop)
 
@@ -95,22 +99,31 @@ if NOT "%__BuildArch%" == "arm64" (
 echo Commencing build of corehost
 echo.
 
-if %__CMakeBinDir% == "" (
-    set "__CMakeBinDir=%__binDir%\%__TargetRid%.%CMAKE_BUILD_TYPE%\corehost"
-)
 if %__IntermediatesDir% == "" (
     set "__IntermediatesDir=%__binDir%\obj\%__TargetRid%.%CMAKE_BUILD_TYPE%\corehost"
 )
-set "__ResourcesDir=%__binDir%\obj\%__TargetRid%.%CMAKE_BUILD_TYPE%\hostResourceFiles"
+
+if %__CMakeBinDir% == "" (
+    set "__CMakeBinDir=%____IntermediatesDir%"
+)
+
+set "__ResourcesDir=%__IntermediatesDir%hostResourceFiles"
 set "__CMakeBinDir=%__CMakeBinDir:\=/%"
 set "__IntermediatesDir=%__IntermediatesDir:\=/%"
 
-:: Check that the intermediate directory exists so we can place our cmake build tree there
-if /i "%__IncrementalNativeBuild%" == "1" goto CreateIntermediates
-if exist "%__IntermediatesDir%" rd /s /q "%__IntermediatesDir%"
+echo __IntermediatesDir=%__IntermediatesDir%
+echo __CMakeBinDir=%__CMakeBinDir%
+echo __ResourcesDir=%__ResourcesDir%
 
-:CreateIntermediates
-if not exist "%__IntermediatesDir%" md "%__IntermediatesDir%"
+set CMakePath=%__rootDir%\artifacts\toolset\native\bin\cmake.cmd
+
+:: Check that the intermediate directory exists so we can place our cmake build tree there
+:: This is already being done in the .proj
+REM  if /i "%__IncrementalNativeBuild%" == "1" goto CreateIntermediates
+REM  exist "%__IntermediatesDir%" rd /s /q "%__IntermediatesDir%"
+
+REM :CreateIntermediates
+REM if not exist "%__IntermediatesDir%" md "%__IntermediatesDir%"
 
 if exist "%VSINSTALLDIR%DIA SDK" goto GenVSSolution
 echo Error: DIA SDK is missing at "%VSINSTALLDIR%DIA SDK". ^
@@ -132,7 +145,7 @@ if /i "%__BuildArch%" == "arm64" (
     call :PrivateToolSet
 )
 
-echo Calling "%__nativeWindowsDir%\gen-buildsys-win.bat %~dp0 "%__VSVersion%" %__BuildArch% %__CommitSha% %__HostVersion% %__AppHostVersion% %__HostResolverVersion% %__HostPolicyVersion%"
+echo Calling "%__nativeWindowsDir%\gen-buildsys-win.bat %~dp0 "%__VSVersion%" %__BuildArch% %__CommitSha% %__HostVersion% %__AppHostVersion% %__HostResolverVersion% %__HostPolicyVersion%  %__PortableBuild%"
 pushd "%__IntermediatesDir%"
 call "%__nativeWindowsDir%\gen-buildsys-win.bat" %~dp0 "%__VSVersion%" %__BuildArch% %__CommitSha% %__HostVersion% %__AppHostVersion% %__HostResolverVersion% %__HostPolicyVersion% %__PortableBuild%
 popd

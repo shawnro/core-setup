@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
   <Import Project="..\Directory.Build.targets" />
+
+  <Target Name="CleanCMakeBuildDir">
+    <Message Text="Directory '$(CMakeBuildDir)' exists" Condition="Exists('$(CMakeBuildDir)')" Importance="High" />
+    <Message Text="Directory '$(CMakeBuildDir)' doesn't exist" Condition="!Exists('$(CMakeBuildDir)')" Importance="High" />
+    <RemoveDir Directories="$(CMakeBuildDir)" Condition="Exists('$(CMakeBuildDir)') And '$(IncrementalNativeBuild)' != 'true'" />
+    <Message Text="Directory '$(CMakeBuildDir)' exists" Condition="Exists('$(CMakeBuildDir)')" Importance="High" />
+    <Message Text="Directory '$(CMakeBuildDir)' doesn't exist" Condition="!Exists('$(CMakeBuildDir)')" Importance="High" />
+    <MakeDir Directories="$(CMakeBuildDir)" Condition="!(Exists('$(CMakeBuildDir)'))" />
+    <Message Text="Directory '$(CMakeBuildDir)' exists" Condition="Exists('$(CMakeBuildDir)')" Importance="High" />
+    <Message Text="Directory '$(CMakeBuildDir)' doesn't exist" Condition="!Exists('$(CMakeBuildDir)')" Importance="High" />
+  </Target>
 </Project>

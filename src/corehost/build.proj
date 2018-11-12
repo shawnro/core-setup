@@ -8,7 +8,10 @@
   <!-- Target that builds dotnet, hostfxr and hostpolicy with the same version as what NetCoreApp will be built for
        since the build produced artifacts should always version the same (even if they may not get used).
   -->
-  <Target Name="GetLatestCommitHash" />
+
+  <PropertyGroup>
+    <CMakeBuildDir>$(IntermediateOutputRootPath)</CMakeBuildDir>
+  </PropertyGroup>
 
   <PropertyGroup Condition="'$(OSGroup)' != 'Windows_NT'">
     <GenerateVersionSourceFile>true</GenerateVersionSourceFile>
@@ -19,16 +22,22 @@
           Condition="'$(OSGroup)' != 'Windows_NT'"
           DependsOnTargets="GetLatestCommitHash;GenerateVersionSourceFile">
     <PropertyGroup>
-      <CMakeBuildDir>$(IntermediateOutputRootPath)corehost\cmake\</CMakeBuildDir>
+      <CMakeBuildDir>$(CMakeBuildDir)cmake\</CMakeBuildDir>
     
-      <BuildArgs>--arch $(TargetArchitecture) --apphostver $(AppHostVersion) --hostver $(HostVersion) --fxrver $(HostResolverVersion) --policyver $(HostPolicyVersion) --commithash $(LatestCommit)</BuildArgs>
+      <BuildArgs>--arch $(TargetArchitecture)</BuildArgs>
+      <BuildArgs>$(BuildArgs) --hostver $(HostVersion)</BuildArgs>
+      <BuildArgs>$(BuildArgs) --apphostver $(AppHostVersion)</BuildArgs>
+      <BuildArgs>$(BuildArgs) --fxrver $(HostResolverVersion)</BuildArgs>
+      <BuildArgs>$(BuildArgs) --policyver $(HostPolicyVersion)</BuildArgs>
+      <BuildArgs>$(BuildArgs) --commithash $(LatestCommit)</BuildArgs>
+      
+      
       <BuildArgs Condition="'$(PortableBuild)' == 'true'">$(BuildArgs) -portable</BuildArgs>     
       <BuildArgs Condition="'$(CrossBuild)' == 'true'">$(BuildArgs) --cross</BuildArgs>  
       <BuildArgs Condition="'$(StripSymbols)' == 'true'">$(BuildArgs) --stripsymbols</BuildArgs>   
     </PropertyGroup>
 
-    <RemoveDir Directories="$(CMakeBuildDir)" Condition="Exists('$(CMakeBuildDir)') And '$(IncrementalNativeBuild)' != 'true'" />
-    <MakeDir Directories="$(CMakeBuildDir)" Condition="!(Exists('$(CMakeBuildDir)'))" />
+    <CallTarget Targets="CleanCMakeBuildDir" />
 
     <Message Text="$(MSBuildProjectDirectory)\build.sh $(BuildArgs)" Importance="High"/>
     <Exec Command="$(MSBuildProjectDirectory)\build.sh $(BuildArgs)"
@@ -53,8 +62,19 @@
           Condition="'$(OSGroup)' == 'Windows_NT'"
           DependsOnTargets="GetLatestCommitHash">
     
-    <Message Text="BaseIntermediateOutputPath == $(BaseIntermediateOutputPath)" Importance="High"/>
-    <Message Text="IntermediateOutputRootPath == $(IntermediateOutputRootPath)" Importance="High"/>
+    <Message Text="OSGroup                    - '$(OSGroup)'" Importance="High"/>
+    <Message Text="TargetArchitecture         - '$(TargetArchitecture)'" Importance="High"/>
+    <Message Text="Platform                   - '$(Platform)'" Importance="High"/>
+    <Message Text="HostMachineRid             - '$(HostMachineRid)'" Importance="High"/>
+    <Message Text="OutputRid                  - '$(OutputRid)'" Importance="High"/>
+    <Message Text="TestTargetRid              - '$(TestTargetRid)'" Importance="High"/>
+    <Message Text="BaseOutputPath             - '$(BaseOutputPath)''" Importance="High"/>
+    <Message Text="OutputRootPath             - '$(OutputRootPath)''" Importance="High"/>
+    <Message Text="OutputPath                 - '$(OutputPath)''" Importance="High"/>
+    <Message Text="BaseIntermediateOutputPath - '$(BaseIntermediateOutputPath)''" Importance="High"/>
+    <Message Text="IntermediateOutputRootPath - '$(IntermediateOutputRootPath)''" Importance="High"/>
+    <Message Text="IntermediateOutputPath     - '$(IntermediateOutputPath)''" Importance="High"/>
+    <Message Text="IncrementalNativeBuild     - '$(IncrementalNativeBuild)'" Importance="High"/>
     
     <!-- Generate Version files -->
     <ItemGroup>
@@ -78,27 +98,40 @@
              Targets="GenerateNativeVersionFile" 
              Condition="'$(IncrementalNativeBuild)' != 'true'"/>
     <PropertyGroup>
-<!-- TODO: this is hard coded and needs to be removed -->
-      <OutputRid>1</OutputRid>
-      <BuildArgs>$(ConfigurationGroup) $(TargetArchitecture) apphostver $(AppHostVersion) hostver $(HostVersion) fxrver $(HostResolverVersion) policyver $(HostPolicyVersion) commit $(LatestCommit) rid $(OutputRid)</BuildArgs>
+      <BuildArgs>$(ConfigurationGroup)</BuildArgs>
+      <BuildArgs>$(BuildArgs) $(TargetArchitecture)</BuildArgs>
+      <BuildArgs>$(BuildArgs) apphostver $(AppHostVersion)</BuildArgs>
+      <BuildArgs>$(BuildArgs) hostver $(HostVersion)</BuildArgs>
+      <BuildArgs>$(BuildArgs) fxrver $(HostResolverVersion)</BuildArgs>
+      <BuildArgs>$(BuildArgs) policyver $(HostPolicyVersion)</BuildArgs>
+      <BuildArgs>$(BuildArgs) commit $(LatestCommit)</BuildArgs>
+      <BuildArgs>$(BuildArgs) rid $(OutputRid)</BuildArgs>
+<!--
+      <BuildArgs>$(BuildArgs) rootDir $(OutputRid)</BuildArgs>
+-->      
+      <BuildArgs>$(BuildArgs) binDir $(OutputRootPath)</BuildArgs>
+      <BuildArgs>$(BuildArgs) interdir $(IntermediateOutputRootPath)</BuildArgs>
+      
       <BuildArgs Condition="'$(PortableBuild)' == 'true'">$(BuildArgs) portable</BuildArgs>  
       <BuildArgs Condition="'$(IncrementalNativeBuild)' == 'true'">$(BuildArgs) incremental-native-build</BuildArgs>
       <CustomNativeToolsetDir Condition="'$(TargetArchitecture)' == 'arm64'"> toolsetdir $(NativeToolsetDir)</CustomNativeToolsetDir>      
     </PropertyGroup>
 
+    <CallTarget Targets="CleanCMakeBuildDir" />
+
     <!-- Run script that invokes Cmake to create VS files, and then calls msbuild to compile them -->
-    <Message Text="$(MSBuildProjectDirectory)\build.cmd $(BuildArgs)" Importance="High"/>
+    <Message Text="$(MSBuildProjectDirectory)\build.cmd $(BuildArgs)$(CustomNativeToolsetDir)" Importance="High"/>
     <Exec Command="$(MSBuildProjectDirectory)\build.cmd $(BuildArgs)$(CustomNativeToolsetDir)" />
 
     <ItemGroup>
-      <CMakeOutput Include="$(IntermediateOutputRootPath)corehost\cli\dotnet\$(ConfigurationGroup)\dotnet.exe" />
-      <CMakeOutput Include="$(IntermediateOutputRootPath)corehost\cli\dotnet\$(ConfigurationGroup)\dotnet.pdb" />
-      <CMakeOutput Include="$(IntermediateOutputRootPath)corehost\cli\apphost\$(ConfigurationGroup)\apphost.exe" />
-      <CMakeOutput Include="$(IntermediateOutputRootPath)corehost\cli\apphost\$(ConfigurationGroup)\apphost.pdb" />
-      <CMakeOutput Include="$(IntermediateOutputRootPath)corehost\cli\hostpolicy\$(ConfigurationGroup)\$(HostPolicyBaseName)" />
-      <CMakeOutput Include="$(IntermediateOutputRootPath)corehost\cli\hostpolicy\$(ConfigurationGroup)\hostpolicy.pdb" />
-      <CMakeOutput Include="$(IntermediateOutputRootPath)corehost\cli\fxr\$(ConfigurationGroup)\$(DotnetHostFxrBaseName)" />
-      <CMakeOutput Include="$(IntermediateOutputRootPath)corehost\cli\fxr\$(ConfigurationGroup)\hostfxr.pdb" />      
+      <CMakeOutput Include="$(CMakeBuildDir)cli\dotnet\$(ConfigurationGroup)\dotnet.exe" />
+      <CMakeOutput Include="$(CMakeBuildDir)cli\dotnet\$(ConfigurationGroup)\dotnet.pdb" />
+      <CMakeOutput Include="$(CMakeBuildDir)cli\apphost\$(ConfigurationGroup)\apphost.exe" />
+      <CMakeOutput Include="$(CMakeBuildDir)cli\apphost\$(ConfigurationGroup)\apphost.pdb" />
+      <CMakeOutput Include="$(CMakeBuildDir)cli\hostpolicy\$(ConfigurationGroup)\$(HostPolicyBaseName)" />
+      <CMakeOutput Include="$(CMakeBuildDir)cli\hostpolicy\$(ConfigurationGroup)\hostpolicy.pdb" />
+      <CMakeOutput Include="$(CMakeBuildDir)cli\fxr\$(ConfigurationGroup)\$(DotnetHostFxrBaseName)" />
+      <CMakeOutput Include="$(CMakeBuildDir)cli\fxr\$(ConfigurationGroup)\hostfxr.pdb" />      
     </ItemGroup>
     
     <Copy SourceFiles="@(CMakeOutput)"

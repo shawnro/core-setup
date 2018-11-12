@@ -4,7 +4,8 @@
     "vswhere": "2.2.7"
   },
   "msbuild-sdks": {
-    "Microsoft.DotNet.Arcade.Sdk": "1.0.0-beta.18529.4"
+    "Microsoft.DotNet.Arcade.Sdk": "1.0.0-beta.18551.5",
+    "Microsoft.DotNet.Build.Tasks.Platform": "1.0.0-ci"
   },
   "native-tools": {
     "cmake": "3.11.1"

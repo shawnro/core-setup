@@ -6,16 +6,12 @@
   </PropertyGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.DotNet.Arcade.Sdk" />
+  <Import Project="Microsoft.DotNet.Build.Tasks.Platform.props" Sdk="Microsoft.DotNet.Build.Tasks.Platform" />
 
   <PropertyGroup>
     <MajorVersion>3</MajorVersion>
     <MinorVersion>0</MinorVersion>
     <PatchVersion>0</PatchVersion>
-<!--  
-    <BaseIntermediateOutputPath>$(IntermediateOutputPath)</BaseIntermediateOutputPath>
--->
-    <IntermediateOutputRootPath Condition="'$(IntermediateOutputRootPath)' == ''">$(BaseIntermediateOutputPath)$(OSPlatformConfig)\</IntermediateOutputRootPath>
-
   </PropertyGroup>
 
 <!--  TODO: Figure out how to use Arcade Versioning story -->
@@ -29,15 +25,17 @@
       set the appropriate "UseShipped*" property below to true so that we will use the last shipped
       version of the package.
     -->
+
+    <ShippedHostVersion>2.0.0</ShippedHostVersion>
     
     <!-- The host/apphost package versions are only updated whenever there is a change in the components -->
     <UseShippedHostPackage>false</UseShippedHostPackage>
     <HostVersion Condition="'$(UseShippedHostPackage)' != 'true'">$(MajorVersion).$(MinorVersion).$(PatchVersion)</HostVersion>
-    <HostVersion Condition="'$(UseShippedHostPackage)' == 'true'">2.0.0</HostVersion>
+    <HostVersion Condition="'$(UseShippedHostPackage)' == 'true'">$(ShippedHostVersion)</HostVersion>
 
     <UseShippedAppHostPackage>false</UseShippedAppHostPackage>
     <AppHostVersion Condition="'$(UseShippedAppHostPackage)' != 'true'">$(MajorVersion).$(MinorVersion).$(PatchVersion)</AppHostVersion>
-    <AppHostVersion Condition="'$(UseShippedAppHostPackage)' == 'true'">2.0.0</AppHostVersion>
+    <AppHostVersion Condition="'$(UseShippedAppHostPackage)' == 'true'">$(ShippedHostVersion)</AppHostVersion>
     
     <!--
         The FXR Resolver package version is only updated whenever there is a change in it.
@@ -46,7 +44,7 @@
     -->
     <UseShippedHostResolverPackage>false</UseShippedHostResolverPackage>
     <HostResolverVersion Condition="'$(UseShippedHostResolverPackage)' != 'true'">$(MajorVersion).$(MinorVersion).$(PatchVersion)</HostResolverVersion>
-    <HostResolverVersion Condition="'$(UseShippedHostResolverPackage)' == 'true'">2.0.0</HostResolverVersion>
+    <HostResolverVersion Condition="'$(UseShippedHostResolverPackage)' == 'true'">$(ShippedHostVersion)</HostResolverVersion>
 
     
     <!--
@@ -56,20 +54,56 @@
     -->
     <UseShippedHostPolicyPackage>false</UseShippedHostPolicyPackage>
     <HostPolicyVersion Condition="'$(UseShippedHostPolicyPackage)' != 'true'">$(MajorVersion).$(MinorVersion).$(PatchVersion)</HostPolicyVersion>
-    <HostPolicyVersion Condition="'$(UseShippedHostPolicyPackage)' == 'true'">2.0.0</HostPolicyVersion>
+    <HostPolicyVersion Condition="'$(UseShippedHostPolicyPackage)' == 'true'">$(ShippedHostVersion)</HostPolicyVersion>
   </PropertyGroup>
 
-  <!--
-    $(OS) is set to Unix/Windows_NT. This comes from an environment variable on Windows and MSBuild on Unix.
+
+  <!-- NativePlatform Properties - move these to the NP SDK
+  ##############################################################
   -->
+
+
+<!-- SHAWNR: These should alredy be defined in ProjectDefaults.props, need to confirm they're set right
   <PropertyGroup>
-    <!-- Temp change to make OS X build behave as a Linux build -->
-    <OsEnvironment Condition="'$(OsEnvironment)'=='' AND '$(OS)'=='OSX'">Unix</OsEnvironment>
-    <OsEnvironment Condition="'$(OsEnvironment)'==''">$(OS)</OsEnvironment>
+    <DebugType Condition="'$(DebugType)' == ''">Portable</DebugType>
+    <UseSourceLink>true</UseSourceLink>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <OSGroup Condition="'$(OSGroup)' == ''">$(OsEnvironment)</OSGroup>
-  </PropertyGroup>
+  Set up Default symbol and optimization for Configuration
+  <Choose>
+    <When Condition="'$(ConfigurationGroup)' == 'Debug'">
+      <PropertyGroup>
+        <DebugSymbols Condition="'$(DebugSymbols)' == ''">true</DebugSymbols>
+        <Optimize Condition="'$(Optimize)' == ''">false</Optimize>
+        <DefineConstants>$(DefineConstants),DEBUG,TRACE</DefineConstants>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(ConfigurationGroup)' == 'Release'">
+      <PropertyGroup>
+        <DebugSymbols Condition="'$(DebugSymbols)' == ''">true</DebugSymbols>
+        <Optimize Condition="'$(Optimize)' == ''">true</Optimize>
+        <DefineConstants>$(DefineConstants),TRACE</DefineConstants>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <ConfigurationErrorMsg>$(ConfigurationErrorMsg);Unknown ConfigurationGroup [$(ConfigurationGroup)] specificed in your project.</ConfigurationErrorMsg>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+-->
 
+
+  <PropertyGroup>
+    <OSPlatformConfig>$(OutputRid).$(ConfigurationGroup)</OSPlatformConfig>
+
+    <OutputRootPath Condition="'$(OutputRootPath)' == ''">$(BaseOutputPath)$(OSPlatformConfig)\</OutputRootPath>
+    <OutputPath Condition="'$(OutputPath)' == ''">$(OutputRootPath)$(MSBuildProjectName)\</OutputPath>
+
+    <IntermediateOutputRootPath Condition="'$(IntermediateOutputRootPath)' == ''">$(BaseIntermediateOutputPath)$(OSPlatformConfig)\</IntermediateOutputRootPath>
+    <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">$(IntermediateOutputRootPath)$(MSBuildProjectName)\</IntermediateOutputPath>
+
+    <CoreHostOutputDir>$(BaseOutputRootPath)corehost\</CoreHostOutputDir>
+  </PropertyGroup>
+  
 </Project>

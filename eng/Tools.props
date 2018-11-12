@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <RestoreSources>$(RestoreSources)</RestoreSources>
+    <RestoreSources>$(RestoreSources);D:\temp\packages.local</RestoreSources>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="$(FeedTasksPackage)" Version="$(FeedTasksPackageVersion)" />
+    <PackageReference Include="$(PlatformTasksPackage)" Version="$(PlatformTasksPackageVersion)" />
   </ItemGroup>
 
-  <UsingTask TaskName="Microsoft.Build.Tasks.Feed.BlobFeed" AssemblyFile="$(FeedTasksPackage)" />
+<!--  <UsingTask TaskName="Microsoft.Build.Tasks.Feed.BlobFeed" AssemblyFile="$(FeedTasksPackage)" /> -->
 </Project>
