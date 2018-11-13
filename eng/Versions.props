@@ -9,8 +9,6 @@
     <!-- Libs -->
     <FeedTasksPackage>Microsoft.DotNet.Build.Tasks.Feed</FeedTasksPackage>
     <FeedTasksPackageVersion>3.0.0-preview1-03322-02</FeedTasksPackageVersion>
-    <PlatformTasksPackage>Microsoft.DotNet.Build.Tasks.Platform</PlatformTasksPackage>
-    <PlatformTasksPackageVersion>1.0.0-ci</PlatformTasksPackageVersion>
 
 <!-- Copy/paste from old dir.props -->
 <!-- SHAWNR

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project InitialTargets="CreateHostMachinePropsFile">
   <Import Project="Sdk.targets" Sdk="Microsoft.DotNet.Arcade.Sdk" />
-  <Import Project="Microsoft.DotNet.Build.Tasks.Platform.targets" Sdk="Microsoft.DotNet.Build.Tasks.Platform" />
+  <Import Project="Sdk.targets" Sdk="Microsoft.DotNet.Arcade.Sdk.NativePlatform" />
 
   <Target Name="GetLatestCommitHash"
           Condition="'$(LatestCommit)' == ''">
@@ -15,14 +15,4 @@
       <LatestCommit>N/A</LatestCommit>
     </PropertyGroup>
   </Target>
-
- <!-- 
-  <Target Name="Build" DependsOnTargets="LoadPlatformInfo">
-    <PropertyGroup>
-      <DefaultBuildAllTarget Condition="'$(DefaultBuildAllTarget)'==''">$(MSBuildProjectDefaultTargets)</DefaultBuildAllTarget>
-    </PropertyGroup>
-
-    <MSBuild Targets="$(DefaultBuildAllTarget)" Projects="@(Project)" />
-  </Target>
-  -->
 </Project>

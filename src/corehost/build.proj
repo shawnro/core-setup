@@ -11,6 +11,8 @@
 
   <PropertyGroup>
     <CMakeBuildDir>$(IntermediateOutputRootPath)</CMakeBuildDir>
+    <DotnetHostFxrBaseName>$(LibPrefix)hostfxr$(LibSuffix)</DotnetHostFxrBaseName>
+    <HostPolicyBaseName>$(LibPrefix)hostpolicy$(LibSuffix)</HostPolicyBaseName>     
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(OSGroup)' != 'Windows_NT'">
@@ -75,6 +77,8 @@
     <Message Text="IntermediateOutputRootPath - '$(IntermediateOutputRootPath)''" Importance="High"/>
     <Message Text="IntermediateOutputPath     - '$(IntermediateOutputPath)''" Importance="High"/>
     <Message Text="IncrementalNativeBuild     - '$(IncrementalNativeBuild)'" Importance="High"/>
+    <Message Text="DotnetHostFxrBaseName      - '$(DotnetHostFxrBaseName)'" Importance="High"/>
+    <Message Text="HostPolicyBaseName         - '$(HostPolicyBaseName)'" Importance="High"/>
     
     <!-- Generate Version files -->
     <ItemGroup>
@@ -91,7 +95,9 @@
 
     <ItemGroup>
     </ItemGroup>
-    
+
+    <CallTarget Targets="CleanCMakeBuildDir" />
+
     <Message Importance="High" Text="MSBuildProjectFullPath: $(MSBuildProjectFullPath)" />
     <MSBuild Projects="$(MSBuildProjectFullPath)"
              Properties="FileDescription=%(HostFiles.FileDescription);NativeVersionFileDir=$(IntermediateOutputRootPath)hostResourceFiles\%(HostFiles.Identity);NativeVersionFile=$(IntermediateOutputRootPath)hostResourceFiles\%(HostFiles.Identity)\version_info.h"
@@ -116,8 +122,6 @@
       <BuildArgs Condition="'$(IncrementalNativeBuild)' == 'true'">$(BuildArgs) incremental-native-build</BuildArgs>
       <CustomNativeToolsetDir Condition="'$(TargetArchitecture)' == 'arm64'"> toolsetdir $(NativeToolsetDir)</CustomNativeToolsetDir>      
     </PropertyGroup>
-
-    <CallTarget Targets="CleanCMakeBuildDir" />
 
     <!-- Run script that invokes Cmake to create VS files, and then calls msbuild to compile them -->
     <Message Text="$(MSBuildProjectDirectory)\build.cmd $(BuildArgs)$(CustomNativeToolsetDir)" Importance="High"/>

@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.DotNet.Arcade.Sdk" />
-  <Import Project="Microsoft.DotNet.Build.Tasks.Platform.props" Sdk="Microsoft.DotNet.Build.Tasks.Platform" />
+  <Import Project="Sdk.props" Sdk="Microsoft.DotNet.Arcade.Sdk.NativePlatform" />
 
   <PropertyGroup>
     <MajorVersion>3</MajorVersion>
@@ -45,7 +45,6 @@
     <UseShippedHostResolverPackage>false</UseShippedHostResolverPackage>
     <HostResolverVersion Condition="'$(UseShippedHostResolverPackage)' != 'true'">$(MajorVersion).$(MinorVersion).$(PatchVersion)</HostResolverVersion>
     <HostResolverVersion Condition="'$(UseShippedHostResolverPackage)' == 'true'">$(ShippedHostVersion)</HostResolverVersion>
-
     
     <!--
          Host Policy package version is only updated whenever there is a change in it.
@@ -57,43 +56,6 @@
     <HostPolicyVersion Condition="'$(UseShippedHostPolicyPackage)' == 'true'">$(ShippedHostVersion)</HostPolicyVersion>
   </PropertyGroup>
 
-
-  <!-- NativePlatform Properties - move these to the NP SDK
-  ##############################################################
-  -->
-
-
-<!-- SHAWNR: These should alredy be defined in ProjectDefaults.props, need to confirm they're set right
-  <PropertyGroup>
-    <DebugType Condition="'$(DebugType)' == ''">Portable</DebugType>
-    <UseSourceLink>true</UseSourceLink>
-  </PropertyGroup>
-
-  Set up Default symbol and optimization for Configuration
-  <Choose>
-    <When Condition="'$(ConfigurationGroup)' == 'Debug'">
-      <PropertyGroup>
-        <DebugSymbols Condition="'$(DebugSymbols)' == ''">true</DebugSymbols>
-        <Optimize Condition="'$(Optimize)' == ''">false</Optimize>
-        <DefineConstants>$(DefineConstants),DEBUG,TRACE</DefineConstants>
-      </PropertyGroup>
-    </When>
-    <When Condition="'$(ConfigurationGroup)' == 'Release'">
-      <PropertyGroup>
-        <DebugSymbols Condition="'$(DebugSymbols)' == ''">true</DebugSymbols>
-        <Optimize Condition="'$(Optimize)' == ''">true</Optimize>
-        <DefineConstants>$(DefineConstants),TRACE</DefineConstants>
-      </PropertyGroup>
-    </When>
-    <Otherwise>
-      <PropertyGroup>
-        <ConfigurationErrorMsg>$(ConfigurationErrorMsg);Unknown ConfigurationGroup [$(ConfigurationGroup)] specificed in your project.</ConfigurationErrorMsg>
-      </PropertyGroup>
-    </Otherwise>
-  </Choose>
--->
-
-
   <PropertyGroup>
     <OSPlatformConfig>$(OutputRid).$(ConfigurationGroup)</OSPlatformConfig>
 
@@ -103,7 +65,6 @@
     <IntermediateOutputRootPath Condition="'$(IntermediateOutputRootPath)' == ''">$(BaseIntermediateOutputPath)$(OSPlatformConfig)\</IntermediateOutputRootPath>
     <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">$(IntermediateOutputRootPath)$(MSBuildProjectName)\</IntermediateOutputPath>
 
-    <CoreHostOutputDir>$(BaseOutputRootPath)corehost\</CoreHostOutputDir>
+    <CoreHostOutputDir>$(ArtifactsBinDir)$(MSBuildProjectName)\$(OSPlatformConfig)\</CoreHostOutputDir>
   </PropertyGroup>
-  
 </Project>
